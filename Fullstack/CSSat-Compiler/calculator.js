@@ -60,12 +60,12 @@ Calculator.prototype.parseA = function() {
 	firstOperator = firstOperator[0];
 	if (firstOperator && firstOperator.value == '+') {
 		this.get();
-		return new TreeNode('A', '+', parseTerm(), parseA());
+		return new TreeNode('A', '+', this.parseTerm(), this.parseA());
 
 	}
 	if (firstOperator && firstOperator.value == '-') {
 		this.get();
-		return new TreeNode('A', '-', parseTerm(), parseA());
+		return new TreeNode('A', '-', this.parseTerm(), this.parseA());
 
 	}
 	// epsilon
@@ -79,20 +79,20 @@ Calculator.prototype.parseFactor = function() {
 	firstOperator = firstOperator[0];
 	if (firstOperator && firstOperator.value == '(') {
 		this.get();	 // left paren
-		var exp = parseExpression();
+		var exp = this.parseExpression();
 		this.get(); // right paren
 		return new TreeNode("Factor", "(", exp, ")");
 
 	}
-	if (firstOperator && firstOperator.value == '-') {
+	else if (firstOperator && firstOperator.value == '-') {
 		this.get();
-		var factor = parseFactor();
+		var factor = this.parseFactor();
 		return new TreeNode("Factor", "-", factor);
 
 	}
-	if (firstOperator && firstOperator.name == 'NUMBER') {
-		console.log("NUMBER!!!!!!")
-		return new TreeNode('Factor', this.get());
+	else if (firstOperator && firstOperator.name == 'NUMBER') {
+		this.get();
+		return new TreeNode("Factor", firstOperator.value);
 	}
 
 }
@@ -102,12 +102,12 @@ Calculator.prototype.parseB = function() {
 	firstOperator = firstOperator[0];
 	if (firstOperator && firstOperator.value == '*') {
 		this.get();
-		return new TreeNode('B', '*', parseFactor(), parseB());
+		return new TreeNode('B', '*', this.parseFactor(), this.parseB());
 
 	}
 	if (firstOperator && firstOperator.value == '/') {
 		this.get();
-		return new TreeNode('B', '/', parseFactor(), parseB());
+		return new TreeNode('B', '/', this.parseFactor(), this.parseB());
 
 	}
 	// epsilon
@@ -117,29 +117,27 @@ Calculator.prototype.parseB = function() {
 }
 
 
+
+var c = new Calculator("1+2");
+c.lexer();
+c.parseExpression();
+// var calculator = new Calculator("(3)");
+// var fakeExpressionTreeNode = new TreeNode("Expression", "3");
+// calculator.parseExpression = function() {
+//   this.get(); // remove the 3 when parseFactor runs
+//   return fakeExpressionTreeNode;
+// }    
+
+// var output = calculator.parseFactor();
+// console.log(output.name);
+// console.log(output.children);
+
+
 function TreeNode(name, ...children) {
 	this.name = name;
 	this.children = children
 	console.log(this.name, this.children);
 }
-
-TreeNode.prototype.accept = function(visitor) {
-  return visitor.visit(this);
-}
-
-function PrintOriginalVisitor() {
-	this.visit = function(node) {
-		console.log(node.name);
-	}
-}
-
-var c = new Calculator("(3+2)/8+1");
-// c.lexer();
-var tree = c.parseExpression();
-var print = new PrintOriginalVisitor();
-tree.accept(print);
-
-
 
 
 
