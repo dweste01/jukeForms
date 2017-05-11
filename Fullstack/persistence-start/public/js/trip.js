@@ -70,24 +70,39 @@ var tripModule = (function () {
       switchTo(newDay);
   }
 
+
+  function deleteCurrentDayFromDB () {
+    return $.ajax({
+      method: 'DELETE',
+      url: `/api/days/${currentDay.number}`
+    })
+
+  }
+
   // ~~~~~~~~~~~~~~~~~~~~~~~
     // Do not delete a day until it has already been deleted from the DB
   // ~~~~~~~~~~~~~~~~~~~~~~~
   function deleteCurrentDay () {
     // prevent deleting last day
     if (days.length < 2 || !currentDay) return;
-    // remove from the collection
-    var index = days.indexOf(currentDay),
+
+    deleteCurrentDayFromDB().then(function(){
+      var index = days.indexOf(currentDay),
       previousDay = days.splice(index, 1)[0],
       newCurrent = days[index] || days[index - 1];
     // fix the remaining day numbers
-    days.forEach(function (day, i) {
-      day.setNumber(i + 1);
-    });
-    switchTo(newCurrent);
-    previousDay.hideButton();
+      Promise.all(days.map(function (day, i) {
+        return day.setNumber(i + 1);
+      })).then(function () {
+        switchTo(newCurrent);
+        previousDay.hideButton();
+      })
+      
+  
+    })
+    // remove from the collection
+ 
   }
-
   // globally accessible module methods
 
   var publicAPI = {
@@ -102,7 +117,10 @@ var tripModule = (function () {
         url: '/api/days'
       }).then(days => {
         if (!days.length)  addDayToDatabase();
-        else days.forEach(day => addDay(day.number))
+        else days.forEach(day => {
+          console.log(day)
+          addDay(day)
+        })
       })
     },
 
