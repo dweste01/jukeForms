@@ -11,7 +11,7 @@ class PlaylistFormContainer extends React.Component {
       inputValue: ''
     }
     this.edited = false;
-    this.disabled = false;
+    this.disabled = true;
     this.tooLong = false;
     this.empty = false;
     this.collectInput = this.collectInput.bind(this);
@@ -23,7 +23,7 @@ class PlaylistFormContainer extends React.Component {
 		const val = evt.target.value;
 
     this.tooLong = val.length > 16;
-    this.empty = (!val.length && this.edited)
+    this.empty = !val.length
     this.disabled = this.tooLong || this.empty
 
 		this.setState({
@@ -37,23 +37,17 @@ class PlaylistFormContainer extends React.Component {
 
   submitInput(evt) {
     evt.preventDefault();
-    console.log(this.state.inputValue);
     this.setState({
       inputValue: ''
     })
 
-    axios.post('/api/playlists', {name : this.state.inputValue})
-      .then(res => res.data)
-      .then(result => {
-        console.log('RESULT!', result)
-      })
-
+    this.props.createPlaylist(this.state.inputValue);
 
   }
 
   render() {
     return(
-      <NewPlaylist changeHandler={this.collectInput} submitHandler={this.submitInput} value={this.state.inputValue} disabled={this.disabled} tooLong={this.tooLong} empty={this.empty}/>
+      <NewPlaylist changeHandler={this.collectInput} submitHandler={this.submitInput} value={this.state.inputValue} edited={this.edited} disabled={this.disabled} tooLong={this.tooLong} empty={this.empty}/>
     )
   }
 }

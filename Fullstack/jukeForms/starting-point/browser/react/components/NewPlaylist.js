@@ -15,7 +15,7 @@ const NewPlaylist = (props) => {
               <input className="form-control" type="text" onChange={props.changeHandler} value={props.value}/>
               {props.tooLong ?
                 <div className="alert alert-warning">Please enter a name less than 16 characters</div>
-                : props.empty ?
+                : (props.empty && props.edited) ?
                   <div className="alert alert-warning">Please enter a name</div>
                   : null}
             </div>
