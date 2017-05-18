@@ -8,9 +8,6 @@ export default class FilterableArtistsContainer extends React.Component {
 	constructor(props) {
 		super(props);
 
-		console.log(props);
-		console.log("THIS: ", this);
-		console.log("THIS.PROPS: ", this.props);
 		this.state = {
 			inputValue: ''
 		}
